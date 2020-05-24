@@ -12,7 +12,9 @@ interface TransactionDTO {
   categoryName: string;
 }
 
-async function findOrCreateCategoryByTitle(title: string): Promise<Category> {
+export async function findOrCreateCategoryByTitle(
+  title: string,
+): Promise<Category> {
   const categoryRepository = getRepository(Category);
   const category = await categoryRepository.findOne({ where: { title } });
 
@@ -32,10 +34,12 @@ class CreateTransactionService {
     categoryName,
   }: TransactionDTO): Promise<Transaction> {
     const repository = getCustomRepository(TransactionsRepository);
-    const currentBalance = await repository.getBalanceAfterOperation({
-      value,
-      type,
-    });
+    const currentBalance = await repository.getBalanceAfterOperations([
+      {
+        value,
+        type,
+      },
+    ]);
 
     if (currentBalance.total < 0) {
       throw new AppError('Insufficient balance to perform operation');
@@ -44,7 +48,7 @@ class CreateTransactionService {
     const category = await findOrCreateCategoryByTitle(categoryName);
     const transaction = repository.create();
     transaction.title = title;
-    transaction.value = value;
+    transaction.value = Number(value);
     transaction.type = type;
     transaction.category = category;
 

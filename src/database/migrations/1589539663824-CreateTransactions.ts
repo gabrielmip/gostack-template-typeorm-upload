@@ -24,8 +24,8 @@ export default class CreateTransactions1589539663824
           },
           {
             name: 'type',
-            type: 'smallint',
-            comment: '0 for income, 1 for outcome',
+            type: 'varchar',
+            comment: 'income or outcome',
           },
           {
             name: 'category_id',
